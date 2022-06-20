@@ -17,4 +17,6 @@ public class SaleDetail {
     private Double unitPrice;
     @ManyToOne
     private Product product;
+    @ManyToOne
+    private Sale sale;
 }

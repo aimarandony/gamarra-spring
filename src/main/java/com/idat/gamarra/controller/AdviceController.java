@@ -1,6 +1,7 @@
 package com.idat.gamarra.controller;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.idat.gamarra.exception.InvalidSaleException;
 import com.idat.gamarra.exception.NotFoundException;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +28,13 @@ public class AdviceController extends ResponseEntityExceptionHandler {
         log.warn("NOT_FOUND: {}", ex.getMessage());
         return new ResponseEntity<>(ErrorResponse.builder().category("NOT_FOUND")
                 .message("Not Found").status(404).description(ex.getMessage()).build(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidSaleException.class)
+    public ResponseEntity<Object> handleInvalidSaleException(InvalidSaleException ex) {
+        log.warn("BAD_REQUEST: {}", ex.getMessage());
+        return new ResponseEntity<>(ErrorResponse.builder().category("BAD_REQUEST")
+                .message("Invalid Sale").status(400).description(ex.getMessage()).build(), HttpStatus.NOT_FOUND);
     }
 
     @Override

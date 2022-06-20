@@ -16,7 +16,7 @@ public class Sale {
     private Long id;
     private String deliveryAddress;
     private LocalDateTime createdAt;
-    private String status;
+    private SaleStatusType status;
     @ManyToOne
     private Customer customer;
 }
