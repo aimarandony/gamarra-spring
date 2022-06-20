@@ -27,6 +27,7 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public Product create(Product product) {
         product.setActive(true);
+        if (product.getStock() == 0) product.setActive(false);
         return repository.save(product);
     }
 
@@ -35,6 +36,7 @@ public class ProductServiceImpl implements ProductService{
         Product productFound = findById(id);
         product.setId(productFound.getId());
         product.setActive(productFound.getActive());
+        if (product.getStock() == 0) product.setActive(false);
         return repository.save(product);
     }
 
