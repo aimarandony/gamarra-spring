@@ -17,4 +17,9 @@ public class SaleDetailServiceImpl implements SaleDetailService{
     public List<SaleDetail> createAll(List<SaleDetail> saleDetailList) {
         return repository.saveAll(saleDetailList);
     }
+
+    @Override
+    public List<SaleDetail> finBySaleId(Long saleId) {
+        return repository.findAllBySaleId(saleId);
+    }
 }

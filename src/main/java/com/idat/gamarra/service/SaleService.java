@@ -11,7 +11,9 @@ public interface SaleService {
     List<Sale> findAll();
     Sale findById(Long id);
     Sale create(Sale sale);
+    FullSaleResponse detailById(Long id);
     FullSaleResponse createFull(FullSaleRequest fullSaleRequest);
     Sale update(Sale sale, Long id);
     void deleteById(Long id);
+    void cancelById(Long id);
 }

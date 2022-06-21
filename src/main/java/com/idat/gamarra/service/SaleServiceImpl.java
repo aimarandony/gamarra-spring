@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
-public class SaleServiceImpl implements SaleService{
+public class SaleServiceImpl implements SaleService {
 
     @Autowired
     private SaleRepository repository;
@@ -49,6 +49,15 @@ public class SaleServiceImpl implements SaleService{
     }
 
     @Override
+    public FullSaleResponse detailById(Long id) {
+        Sale sale = findById(id);
+        List<SaleDetail> saleDetailList = saleDetailService.finBySaleId(sale.getId());
+        Customer customer = customerService.findById(sale.getCustomer().getId());
+        double totalPrice = calcTotalPrice(saleDetailList);
+        return SaleMapper.toFullSaleResponse(sale, saleDetailList, customer, totalPrice);
+    }
+
+    @Override
     @Transactional
     public FullSaleResponse createFull(FullSaleRequest fullSaleRequest) {
 
@@ -57,12 +66,12 @@ public class SaleServiceImpl implements SaleService{
 
         // Get Car Items
         List<SaleDetail> carItems = fullSaleRequest.getCarItems().stream().map(saleDetailRequest -> {
-           SaleDetail saleDetail = new SaleDetail();
-           Product productFound = productService.findById(saleDetailRequest.getProductId());
-           saleDetail.setProduct(productFound);
-           saleDetail.setQuantity(saleDetailRequest.getQuantity());
-           saleDetail.setUnitPrice(productFound.getPrice());
-           return saleDetail;
+            SaleDetail saleDetail = new SaleDetail();
+            Product productFound = productService.findById(saleDetailRequest.getProductId());
+            saleDetail.setProduct(productFound);
+            saleDetail.setQuantity(saleDetailRequest.getQuantity());
+            saleDetail.setUnitPrice(productFound.getPrice());
+            return saleDetail;
         }).collect(Collectors.toList());
 
         // Create Sale
@@ -74,9 +83,6 @@ public class SaleServiceImpl implements SaleService{
         // Update Stock Products
         productService.updateStock(carItems);
 
-        // Total Price init
-        AtomicReference<Double> totalPrice = new AtomicReference<>(0.0);
-
         // Create Sale Detail
         List<SaleDetail> saleDetailList = new ArrayList<>();
         carItems.forEach(carItem -> {
@@ -86,21 +92,43 @@ public class SaleServiceImpl implements SaleService{
             saleDetail.setUnitPrice(carItem.getUnitPrice());
             saleDetail.setSale(findById(saleCreated.getId()));
             saleDetailList.add(saleDetail);
-            totalPrice.updateAndGet(v -> v + saleDetail.getQuantity() * saleDetail.getUnitPrice());
         });
         List<SaleDetail> saleDetailListCreated = saleDetailService.createAll(saleDetailList);
 
-        return SaleMapper.toFullSaleResponse(saleCreated, saleDetailListCreated, customerFound, totalPrice.get());
+        double totalPrice = calcTotalPrice(saleDetailList);
+
+        return SaleMapper.toFullSaleResponse(saleCreated, saleDetailListCreated, customerFound, totalPrice);
     }
 
     @Override
     public Sale update(Sale sale, Long id) {
-        return null;
+        Sale saleFound = findById(id);
+        sale.setId(saleFound.getId());
+        return repository.save(sale);
     }
 
     @Override
     public void deleteById(Long id) {
         if (!repository.existsById(id)) throw new NotFoundException(id);
         repository.deleteById(id);
+    }
+
+    @Override
+    public void cancelById(Long id) {
+        Sale sale = findById(id);
+
+        List<SaleDetail> saleDetails = saleDetailService.finBySaleId(id);
+        List<Product> productList = saleDetails.stream().peek(saleDetail -> {
+            Product productUpd = saleDetail.getProduct();
+            productUpd.setStock(productUpd.getStock() + saleDetail.getQuantity());
+        }).map(SaleDetail::getProduct).collect(Collectors.toList());
+        productService.saveAll(productList);
+
+        sale.setStatus(SaleStatusType.CANCELED);
+        update(sale, id);
+    }
+
+    private double calcTotalPrice(List<SaleDetail> saleDetailList) {
+        return saleDetailList.stream().mapToDouble(saleDetail -> saleDetail.getQuantity() * saleDetail.getUnitPrice()).sum();
     }
 }

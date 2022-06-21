@@ -4,7 +4,6 @@ import com.idat.gamarra.entity.Customer;
 import com.idat.gamarra.entity.Sale;
 import com.idat.gamarra.entity.SaleDetail;
 import com.idat.gamarra.model.FullSaleResponse;
-import com.idat.gamarra.model.SaleDetailRequest;
 import com.idat.gamarra.model.SaleDetailResponse;
 import com.idat.gamarra.model.SaleResponse;
 
@@ -16,10 +15,15 @@ public class SaleMapper {
 
     public static SaleResponse toSaleResponse(Sale sale) {
         return SaleResponse.builder()
+                .id(sale.getId())
                 .deliveryAddress(sale.getDeliveryAddress())
                 .status(sale.getStatus()).createdAt(sale.getCreatedAt())
                 .customerId(sale.getCustomer().getId().toString())
                 .build();
+    }
+
+    public static List<SaleResponse> toSaleResponseList(List<Sale> sales) {
+        return sales.stream().map(SaleMapper::toSaleResponse).collect(Collectors.toList());
     }
 
     public static SaleDetailResponse toSaleDetailResponse(SaleDetail saleDetail) {

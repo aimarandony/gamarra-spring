@@ -32,6 +32,11 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
+    public List<Product> saveAll(List<Product> productList) {
+        return repository.saveAll(productList);
+    }
+
+    @Override
     public Product create(Product product) {
         product.setActive(true);
         if (product.getStock() == 0) product.setActive(false);

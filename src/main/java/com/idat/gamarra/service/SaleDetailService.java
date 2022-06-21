@@ -7,4 +7,6 @@ import java.util.List;
 public interface SaleDetailService {
 
     List<SaleDetail> createAll(List<SaleDetail> saleDetailList);
+
+    List<SaleDetail> finBySaleId(Long saleId);
 }
