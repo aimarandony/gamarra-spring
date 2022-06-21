@@ -2,6 +2,7 @@ package com.idat.gamarra.service;
 
 import com.idat.gamarra.entity.Product;
 import com.idat.gamarra.entity.SaleDetail;
+import com.idat.gamarra.exception.InvalidDeleteException;
 import com.idat.gamarra.exception.InvalidSaleException;
 import com.idat.gamarra.exception.NotFoundException;
 import com.idat.gamarra.repository.ProductRepository;
@@ -15,6 +16,9 @@ public class ProductServiceImpl implements ProductService{
 
     @Autowired
     private ProductRepository repository;
+
+    @Autowired
+    private SaleDetailService saleDetailService;
 
     @Override
     public List<Product> findAll() {
@@ -68,7 +72,9 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public void deleteById(Long id) {
+        String msg = "El producto con ID %d se encuentra en uso y no puede ser eliminado.";
         if (!repository.existsById(id)) throw new NotFoundException(id);
+        if (saleDetailService.existByProductId(id)) throw new InvalidDeleteException(String.format(msg, id));
         repository.deleteById(id);
     }
 }

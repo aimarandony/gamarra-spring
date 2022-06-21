@@ -13,7 +13,8 @@ public class PurchaseOrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer quantity;
+    private Integer currentStock;
+    private PurchaseOrderStatusType status;
     @ManyToOne
     private PurchaseOrder purchaseOrder;
     @ManyToOne

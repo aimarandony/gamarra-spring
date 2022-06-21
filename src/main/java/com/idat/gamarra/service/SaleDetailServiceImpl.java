@@ -22,4 +22,9 @@ public class SaleDetailServiceImpl implements SaleDetailService{
     public List<SaleDetail> finBySaleId(Long saleId) {
         return repository.findAllBySaleId(saleId);
     }
+
+    @Override
+    public boolean existByProductId(Long productId) {
+        return repository.existsByProductId(productId);
+    }
 }
