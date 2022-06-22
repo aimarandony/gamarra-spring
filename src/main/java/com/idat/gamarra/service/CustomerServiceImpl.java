@@ -16,4 +16,9 @@ public class CustomerServiceImpl implements CustomerService{
     public Customer findById(Long id) {
         return repository.findById(id).orElseThrow(() -> new NotFoundException(id));
     }
+
+    @Override
+    public Customer create(Customer customer) {
+        return repository.save(customer);
+    }
 }

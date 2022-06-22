@@ -5,4 +5,6 @@ import com.idat.gamarra.entity.Customer;
 public interface CustomerService {
 
     Customer findById(Long id);
+
+    Customer create(Customer customer);
 }
