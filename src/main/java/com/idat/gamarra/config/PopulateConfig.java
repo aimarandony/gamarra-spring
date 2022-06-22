@@ -18,6 +18,7 @@ public class PopulateConfig {
     @Autowired
     private CustomerService customerService;
 
+    //@PostConstruct
     public void databaseInit() {
         Product product1, product2, product3, product4, product5;
         Customer customer;
