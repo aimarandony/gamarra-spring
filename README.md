@@ -1,12 +1,12 @@
-# Gamarra Project
+# Gamarra Project (23/06/2022)
 
 ### Integrantes 
 > - Berrocal Coaquira, Aimar Andony (100%)
-> - Fernando Alonso, Silupú Oquelis (%)
-> - Angelica Maria, Failoc Torres (%)
-> - Sebastian Nicolas, Principe Reynoso (%)
-> - Daniel Fernando, Dioses Cordova (%)
-> - Aneli Lucia, Julca Ramirez (%)
+> - Fernando Alonso, Silupú Oquelis (85%)
+> - Angelica Maria, Failoc Torres (90%)
+> - Sebastian Nicolas, Principe Reynoso (70%)
+> - Daniel Fernando, Dioses Cordova (65%)
+> - Aneli Lucia, Julca Ramirez (68%)
 
 ### URL BASE
 

@@ -11,9 +11,11 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -23,6 +25,14 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 @Slf4j
 public class AdviceController extends ResponseEntityExceptionHandler {
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers,
+                                                                  HttpStatus status, WebRequest request) {
+        log.warn("BAD_REQUEST: {}", "Malformed JSON request");
+        return new ResponseEntity<>(ErrorResponse.builder().status(400).category("BAD_REQUEST")
+                .message("El JSON no es correcto para esta petición.").build(), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> handleNotFoundException(NotFoundException ex) {
@@ -43,6 +53,13 @@ public class AdviceController extends ResponseEntityExceptionHandler {
         log.warn("BAD_REQUEST: {}", ex.getMessage());
         return new ResponseEntity<>(ErrorResponse.builder().category("BAD_REQUEST")
                 .message("Invalid Delete").status(400).description(ex.getMessage()).build(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({Exception.class, HttpServerErrorException.class})
+    public ResponseEntity<Object> handleServerErrorException(Exception ex) {
+        log.warn("INTERNAL_SERVER_ERROR: {}", ex.getMessage());
+        return new ResponseEntity<>(ErrorResponse.builder().category("INTERNAL_SERVER_ERROR")
+                .message("Internal Server Error").status(500).description(ex.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
