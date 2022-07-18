@@ -4,6 +4,7 @@ import com.idat.gamarra.entity.Product;
 import com.idat.gamarra.entity.SaleDetail;
 import com.idat.gamarra.exception.InvalidDeleteException;
 import com.idat.gamarra.exception.InvalidSaleException;
+import com.idat.gamarra.exception.InvalidUpdateException;
 import com.idat.gamarra.exception.NotFoundException;
 import com.idat.gamarra.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,8 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public Product create(Product product) {
+        if (repository.existsByDescriptionAndColorAndSize(product.getDescription(), product.getColor(), product.getSize()))
+            throw new InvalidUpdateException("Ya existe un producto con los mismos datos. Se sugiere actualizar.");
         product.setActive(true);
         if (product.getStock() == 0) product.setActive(false);
         return repository.save(product);
@@ -51,8 +54,7 @@ public class ProductServiceImpl implements ProductService{
     public Product update(Product product, Long id) {
         Product productFound = findById(id);
         product.setId(productFound.getId());
-        product.setActive(productFound.getActive());
-        if (product.getStock() == 0) product.setActive(false);
+        product.setActive(product.getStock() != 0);
         return repository.save(product);
     }
 

@@ -3,6 +3,7 @@ package com.idat.gamarra.controller;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.idat.gamarra.exception.InvalidDeleteException;
 import com.idat.gamarra.exception.InvalidSaleException;
+import com.idat.gamarra.exception.InvalidUpdateException;
 import com.idat.gamarra.exception.NotFoundException;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,8 +49,8 @@ public class AdviceController extends ResponseEntityExceptionHandler {
                 .message("Invalid Sale").status(400).description(ex.getMessage()).build(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(InvalidDeleteException.class)
-    public ResponseEntity<Object> handleInvalidDeleteException(InvalidDeleteException ex) {
+    @ExceptionHandler({InvalidDeleteException.class, InvalidUpdateException.class})
+    public ResponseEntity<Object> handleInvalidDeleteException(RuntimeException ex) {
         log.warn("BAD_REQUEST: {}", ex.getMessage());
         return new ResponseEntity<>(ErrorResponse.builder().category("BAD_REQUEST")
                 .message("Invalid Delete").status(400).description(ex.getMessage()).build(), HttpStatus.NOT_FOUND);
